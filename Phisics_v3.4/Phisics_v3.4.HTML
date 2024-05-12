@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="styles/style.css" />
+    <title> Найкраща програма у світі</title>
+</head>
+
+<body>
+    <h1>Симуляція деформацій в елементах конструкцій</h1>
+    <h3>Версія V3.2 від 06.05.2024</h3>
+    <button id="fullscreenButton" class="button" onclick="toggleFullScreen()">Розгорнути на весь екран</button>
+
+
+    <div class="main_block">
+
+        <div class="block">
+            <canvas id="canvas" width="1200" height="600" class="canvas"></canvas>
+            <div class="block__column">
+                
+                <p>Характеристика вибраного елемента</p>
+                <textarea id="parametr_list" style="width: 250px; height: 100%;"></textarea>
+            </div>
+            <div class="block__column">
+                <p>Список активних точок</p>
+                <textarea id="Point_list_textarea" style="width: 220px; height: 100%;"></textarea>
+            </div>
+            <div class="block__column">
+                <p>Список пружин</p>
+                <textarea id="Spring_list_textarea" style="width: 220px; height: 100%;"></textarea>
+            </div>  
+            
+        </div>
+
+
+
+        <div class="block">
+
+            <div class="block__column">
+                <p>Налаштувати</p>
+                <div class="block__item">
+                    <input type="range" id="angle_range" name="cowbell" class="range" min="1" max="360" value="1"
+                        step="1" oninput="rangeValue()" />
+                    <p id="angle_range_text" class="text">0</p>
+                    <p class="text">Повернути стрілку </p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="time_interval_range" name="cowbell" class="range" min="1" max="1000"
+                        value="2" step="1" oninput="Set_interval()" />
+                    <p id="time_interval_range_text" class="text">0 </p>
+                    <p class="text">Затримка  </p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="range_2" name="cowbell" class="range" min="2" max="100" value="2"
+                        step="0.0001" oninput="Set_numSubstep()" />
+                    <p id="range_2_text" class="text">0 </p>
+                    <p class="text">точність симуляції </p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="scale_velocity" name="cowbell" class="range" min="0" max="1000" value="50"
+                        step="1" oninput="rangeValue()" />
+                    <p id="scale_velocity_text" class="text">0.0</p>
+                    <p class="text">Масштаб вектор швидкості</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="scale_force" name="cowbell" class="range" min="0" max="1000" value="13"
+                        step="1" oninput="rangeValue()" />
+                    <p id="scale_force_text" class="text">0.0</p>
+                    <p class="text">Масштаб вектора сили</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="scale_thiknes" name="cowbell" class="range" min="0" max="10" value="0.4"
+                        step="0.01" oninput="rangeValue()" />
+                    <p id="scale_thiknes_text" class="text">0.2</p>
+                    <p class="text">Товщина лінії</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="scale_stress_positive" name="cowbell" class="range" min="0" max="1000"
+                        value="200" step="0.01" oninput="rangeValue()" />
+                    <p id="scale_stress_positive_text" class="text">0.2</p>
+                    <p class="text">Чутливість кольору розтягнення</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="scale_stress_negative" name="cowbell" class="range" min="0" max="1000"
+                        value="200" step="0.01" oninput="rangeValue()" />
+                    <p id="scale_stress_negative_text" class="text">0.2</p>
+                    <p class="text">Чутливість кольору стискання</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="graviti_scale_range" name="cowbell" class="range" min="0" max="1000"
+                        value="100" step="1" oninput="rangeValue()" />
+                    <p id="graviti_scale_range_text" class="text">1</p>
+                    <p class="text">Масштаб вектора гравітації g</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="graviti_range" name="cowbell" class="range" min="0" max="0.01" value="0.002"
+                        step="0.0001" oninput="rangeValue()" />
+                    <p id="graviti_range_text" class="text">0.0</p>
+                    <p class="text">Сила гравітації g</p>
+                </div>
+                <div class="block__item">
+                    <input type="range" id="stifness_range" name="cowbell" class="range" min="0" max="0.8" value="0.4"
+                        step="0.0001" oninput="rangeValue()" />
+                    <p id="stifness_range_text" class="text">0.0</p>
+                    <p class="text">жорсткість пружини </p>
+                </div>
+
+                <div class="block__item">
+                    <button class="button" onclick="Button_1_function()">отримати данні </button>
+                </div>
+            </div>
+            <div class="block__column">
+                <div class="block__item">
+                    <input type="range" id="font_size_range" name="cowbell" class="range" min="0" max="2" value="1"
+                        step="0.01" oninput="rangeValue()" />
+                    <p id="font_size_range_text" class="text">1</p>
+                    <p class="text">Масштаб шрифту </p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="mass_range" name="cowbell" class="range" min="0.001" max="10" value="1"
+                        step="0.01" oninput="rangeValue()" />
+                    <p id="mass_range_text" class="text">1</p>
+                    <p class="text">Маса точок</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="range" id="speed_range" name="cowbell" class="range" min="0" max="100" value="1"
+                        step="1" oninput="rangeValue()" />
+                    <p id="speed_range_text" class="text">1</p>
+                    <p class="text"> точок пропустити на графіку </p>
+                </div>
+
+
+                <div class="block__item">
+                    <button class="button" onclick="Button_1_function()">Поставити шарнір XY </button>
+                </div>
+
+                <div class="block__item">
+                    <button class="button" onclick="Button_1_function()">Поставити шарнір X </button>
+                </div>
+                <div class="block__item">
+                    <button class="button" onclick="Button_1_function()">Поставити шарнір Y </button>
+                </div>
+
+                <div class="block__item">
+                    <button class="button" onclick="_function()">"жорсткий" мотор </button>
+                </div>
+
+                <div class="block__item">
+                    <button class="button" onclick="_function()">"мякий" мотор </button>
+                </div>
+
+                <div class="block__item">
+                    <button class="button" onclick="_function()">видалити пружину</button>
+                </div>
+                <div class="block__item">
+                    <button class="button" onclick="_function()">видалити точку</button>
+                </div>
+                <div class="block__item">
+                    <button class="button" onclick="_function()">з'єднати вибрані точки </button>
+                </div>
+                
+            </div>
+
+
+            <div class="block__column">
+
+                
+                <p>Показати</p>
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_1" name="checkBox_1" class="number_input"
+                        oninput="checkBox_function()"></input>
+                    <p class="text">виводити в консоль</p>
+                </div>
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_Dot_number" name="checkBox_Dot_number" class="number_input"
+                        oninput="checkBox_function()"></input>
+                    <p class="text">№ вузлів</p>
+                </div>
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_Spring_number" name="checkBox_Spring_number"
+                        class="number_input" oninput="checkBox_function()"></input>
+                    <p class="text">№ пружин</p>
+                </div>
+
+<!--
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_stretch" name="checkBox_stretch" class="number_input"  checked="false"
+                        oninput="checkBox_function()"></input>
+                    <p class="text">Деформації</p>
+                </div>
+-->
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_stretch" name="checkBox_stretch" class="number_input" 
+                        oninput="checkBox_function()"></input>
+                    <p class="text">Деформації</p>
+                </div>
+
+                <div class="block__item">
+                    <input type="checkbox" id="checkBox_destruction" name="checkBox_destruction" class="number_input"
+                        oninput="checkBox_function()"></input>
+                    <p class="text">Руйнування</p>
+                </div>
+
+                <div class="block__column">
+                    <p>Автор - Шпильовий Д.О.</p>
+                    <p>___________________________________________________________</p>
+                    <p>кнопка 1 - нова точка</p>
+                    <p>кнопка 2 - з'эднати 2 точки</p>
+                    <p>кнопка 3 - жорстка опора</p>
+                    <p>кнопка 4 - рухома опора по Y </p>
+                    <p>кнопка 5 - рухома опора по X </p>
+                    <p>кнопка 6 - переназначити останнє з'єднання </p>
+                    <p>кнопка 7 -  з'єднання точок розміром пружини в 50 мм </p>
+                    <p>Shift - створити мотор 1</p>
+                    <p>ctrl - створити мотор 2</p>
+                    <p>del - видалити пружину</p>
+                    <p>ПКМ - потянути за точку</p>
+                    <p>ЛКМ - перемістити екран</p>
+                    <p>Ролик - зум</p>
+                    
+                </div>
+               
+
+                <!--  
+                <div class="block__item">
+                    <input type="input" id="input_2" name="name" class="number_input" value="0"></input>
+                    <p class="text">заготовка тексту</p>
+                </div>
+            </div>
+-->
+            </div>
+              <!-- 
+            <div class="block__column" id="slider_column">
+                <p>Характеристика вибраного елемента</p>
+                <textarea id="parametr_list" style="width: 250px; height: 100%;"></textarea>
+            </div>
+            -->
+        </div>
+
+        <style>
+            * {
+                padding: 0px;
+                margin: 0px;
+                border: 0px;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+
+            *::before,
+            *::after {
+                display: inline-block;
+            }
+
+            html,
+            body {
+                height: 100%;
+            }
+
+            p {
+                margin: 0;
+            }
+
+            .canvas {
+                border: 1px solid black;
+                /*width: 1000px;*/
+            }
+
+            .range {
+                width: 250px;
+            }
+
+
+            .block {
+                display: flex;
+
+                justify-content: start;
+                align-content: start;
+                gap: 5px;
+                background-color: rgb(206, 207, 214);
+                border-radius: 5px;
+                box-shadow: 10px 10px 20px 2px rgb(128, 125, 125);
+            }
+
+            .block__column {
+                background-color: rgb(195, 198, 226);
+                /* display: grid;*/
+                display: flex;
+                flex-direction: column;
+            }
+
+            .block__item {
+                display: flex;
+                height: 20px;
+                box-shadow: 0px 0px 10px 0px rgb(128, 125, 125);
+            }
+
+            .text {
+                height: 20px;
+                border-radius: 5px;
+                box-shadow: 0px 0px 10px 1px rgb(128, 125, 125);
+            }
+
+            .number_input {
+                width: 50px;
+                display: flex;
+                border-radius: 10px;
+                box-shadow: 10px 10px 20px 2px rgb(128, 125, 125);
+            }
+        </style>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Ваш JavaScript код
+                // Цей код виконається тільки після завантаження всіх файлів
+            });
+        </script>
+
+<script>
+ function toggleFullScreen() {
+    var canvas = document.getElementById("canvas");
+    if (!document.fullscreenElement) {
+        canvas.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+    updateCanvasSize(); // Оновлення розміру канвасу при вході/виході з повноекранного режиму
+}
+
+function updateCanvasSize() {
+    var canvas = document.getElementById("canvas");
+    if (document.fullscreenElement) {
+        canvas.width = window.screen.width;
+        canvas.height = window.screen.height;
+    } else {
+        canvas.width = 1920; // Початкова ширина
+        canvas.height = 1080; // Початкова висота
+    }
+}
+</script>
+
+        <script src="js/Camera.js"></script>
+        <script src="js/Plotter.js"></script>
+        <script src="js/Draw.js"></script>
+        <script src="js/html_menu.js"></script>
+        <script src="js/Menu_class.js"></script>
+        <script src="js/Trace_path.js"></script>
+        <script src="js/Key_pressed_class.js"></script>
+        <script src="js/PVector_class.js"></script>
+        <script src="js/functions.js"></script>
+        <script src="js/Mouse.js"></script>
+        <script src="js/point_class.js"></script>
+        <script src="js/spring_class.js"></script>
+        <script src="js/Main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Point and Spring Simulation</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="webglCanvas" width="800" height="600"></canvas>
+    <script>
+        let gl;
+        let program;
+
+        window.onload = function () {
+            let canvas = document.getElementById("webglCanvas");
+            gl = canvas.getContext("webgl");
+
+            if (!gl) {
+                console.error("Unable to initialize WebGL. Your browser may not support it.");
+                return;
+            }
+
+            // Ініціалізуємо шейдери
+            let vertexShaderSource = `
+                attribute vec2 a_position;
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                }
+            `;
+
+            let fragmentShaderSource = `
+                precision mediump float;
+                void main() {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            `;
+
+            let vertexShader = gl.createShader(gl.VERTEX_SHADER);
+            gl.shaderSource(vertexShader, vertexShaderSource);
+            gl.compileShader(vertexShader);
+
+            let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+            gl.shaderSource(fragmentShader, fragmentShaderSource);
+            gl.compileShader(fragmentShader);
+
+            program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                console.error("Unable to initialize the shader program: " + gl.getProgramInfoLog(program));
+                return;
+            }
+
+            gl.useProgram(program);
+
+            // Викликаємо вашу функцію mainSetup
+            mainSetup();
+            setInterval(() => mainLoop(canvas), 10); // Викликаємо вашу функцію mainLoop кожні 10 мілісекунд
+        };
+
+        function line(canvas, x1, y1, x2, y2) {
+    // Перевести координати в діапазон від -1 до 1 (нормалізувати)
+    let x1_n = (x1 / canvas.width) * 2 - 1;
+    let y1_n = (y1 / canvas.height) * -2 + 1; // у Y змінюємо знак, оскільки WebGL має звернення від верхньої до нижньої частини екрану
+    let x2_n = (x2 / canvas.width) * 2 - 1;
+    let y2_n = (y2 / canvas.height) * -2 + 1;
+
+    // Створити буфер вершин для координат
+    let vertices = new Float32Array([
+        x1_n, y1_n,
+        x2_n, y2_n
+    ]);
+
+    // Створити буфер та завантажити дані вершин
+    let vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    // Отримати позицію атрибута у програмі шейдерів
+    let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+
+    // Вказати, що потрібно використовувати буфер вершин для цього атрибута
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+    // Виконати малювання лінії
+    gl.drawArrays(gl.LINES, 0, 2);
+}
+
+
+        function mainSetup() {
+            // Тут реалізуйте початкову настройку, створення точок, пружин і т.д.
+        }
+
+        function mainLoop(canvas) {
+    console.log("sdsd");
+    // Тут реалізуйте головний цикл програми, де буде відбуватися оновлення стану симуляції і малювання на канвасі
+    line(canvas, 50, 50, 200, 200); // Приклад виклику функції line з координатами (0,0) та (100,100)
+   
+    /*
+    for (let i = 0 ; i<500;i=i+5)
+    {
+    line(canvas, i, 0, 100, 100);
+    }
+    */
+}
+    </script>
+</body>
+</html>
